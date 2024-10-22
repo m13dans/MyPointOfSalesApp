@@ -1,0 +1,25 @@
+<div class="flex justify-content-center align-items-center min-h-screen">
+  <p-card header="sign up" [style]="{ width: '400px' }">
+    <form>
+      <div class="field">
+        <label for="email"> Username </label>
+        <input
+          type="text"
+          id="username"
+          name="username"
+          pInputText
+          class="w-full"
+          [(ngModel)]="username"
+        />
+      </div>
+      <div class="field">
+        <label for="email"> Email </label>
+        <input type="text" pInputText class="w-full" />
+      </div>
+      <div class="field">
+        <label for="password"> Password </label>
+        <input type="text" pInputText class="w-full" />
+      </div>
+    </form>
+  </p-card>
+</div>
