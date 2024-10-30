@@ -25,8 +25,8 @@ public static class AccountEndpoint
 
     private static async Task<IResult> Register(
         UserService services,
-        RegisterUserCommand command,
-        IValidator<RegisterUserCommand> validator)
+        RegisterUserRequest command,
+        IValidator<RegisterUserRequest> validator)
     {
         var validationResult = await validator.ValidateAsync(command);
         if (!validationResult.IsValid)
@@ -42,8 +42,8 @@ public static class AccountEndpoint
 
     private static async Task<IResult> Login(
         UserService services,
-        LoginUserCommand command,
-        IValidator<LoginUserCommand> validator)
+        LoginUserRequest command,
+        IValidator<LoginUserRequest> validator)
     {
         var validationResult = await validator.ValidateAsync(command);
         if (!validationResult.IsValid)
@@ -54,16 +54,12 @@ public static class AccountEndpoint
         return result.Match<IResult>(
             Ok,
             error => ValidationProblem(error.ToDictionary(x => x.Code,
-              y => error.Select(x => x.Description).ToArray())));
+              _ => error.Select(x => x.Description).ToArray())));
 
     }
-    private static async Task<IResult> Logout(ItemServices services, int id)
+    public static Task<IResult> Logout()
     {
-        var result = await services.DeleteItem(id);
-
-        return result.Match<IResult>(
-            Ok,
-            error => BadRequest(error));
+        throw new NotImplementedException();
     }
 
 }

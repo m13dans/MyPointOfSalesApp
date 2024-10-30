@@ -101,8 +101,8 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddScoped<IValidator<CreateItemCommand>, CreateItemValidator>();
 builder.Services.AddScoped<IValidator<UpdateItemCommand>, UpdateItemValidator>();
-builder.Services.AddScoped<IValidator<RegisterUserCommand>, RegisterUserValidator>();
-builder.Services.AddScoped<IValidator<LoginUserCommand>, LoginUserValidator>();
+builder.Services.AddScoped<IValidator<RegisterUserRequest>, RegisterUserValidator>();
+builder.Services.AddScoped<IValidator<LoginUserRequest>, LoginUserValidator>();
 builder.Services.AddScoped<IValidator<PostTransactionCommand>, PostTransactionCommandValidator>();
 
 builder.Services.AddScoped<IItemRepository, ItemRepository>();

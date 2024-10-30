@@ -31,4 +31,8 @@ public class TokenRepository(IConfiguration config) : ITokenRepoSitory
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
+
+    public string HashPassword(string password) => BCrypt.Net.BCrypt.HashPassword(password);
+
+    public bool VerifyToken(string password, string hash) => BCrypt.Net.BCrypt.Verify(password, hash);
 }

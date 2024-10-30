@@ -1,12 +1,16 @@
 namespace MyPointOfSales.Application.Features.Account;
 
-public record RegisterUserCommand(
+public record RegisterUserRequest(
   string Nama,
   string Email,
   string Password
 );
 
-public record LoginUserCommand(
+public record LoginUserRequest(
   string Email,
   string Password
+);
+
+public record LoginUserResponse(
+    string Bearer
 );

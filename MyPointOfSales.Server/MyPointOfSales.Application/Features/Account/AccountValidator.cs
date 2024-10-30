@@ -1,10 +1,9 @@
 using FluentValidation;
-using MyPointOfSales.Application.Features.Account;
 using MyPointOfSales.Domain.Users;
 
-namespace MyPointOfSales.API.Features.Account;
+namespace MyPointOfSales.Application.Features.Account;
 
-public class RegisterUserValidator : AbstractValidator<RegisterUserCommand>
+public class RegisterUserValidator : AbstractValidator<RegisterUserRequest>
 {
     public RegisterUserValidator(IUserRepoSitory userRepo)
     {
@@ -31,11 +30,11 @@ public class RegisterUserValidator : AbstractValidator<RegisterUserCommand>
             .Matches(@"[\W]").WithMessage("Password memiliki setidaknya satu karakter spesial (!.@ dll..).");
     }
 }
-public class LoginUserValidator : AbstractValidator<LoginUserCommand>
+public class LoginUserValidator : AbstractValidator<LoginUserRequest>
 {
     public LoginUserValidator()
     {
         RuleFor(x => x.Email).NotEmpty().EmailAddress();
-        RuleFor(x => x.Password).NotEmpty();
+        RuleFor(x => x.Password).NotEmpty().WithMessage("Password harus di isi");
     }
 }
