@@ -1,6 +1,0 @@
-@MyPointOfSales.API_HostAddress = http://localhost:5124
-
-GET {{MyPointOfSales.API_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
