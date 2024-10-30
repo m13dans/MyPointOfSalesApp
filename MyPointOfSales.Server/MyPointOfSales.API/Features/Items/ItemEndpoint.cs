@@ -1,3 +1,4 @@
+using ErrorOr;
 using FluentValidation;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -44,11 +45,13 @@ public static class ItemEndpoint
     private static async Task<IResult> GetItemById(ItemServices services, int id)
     {
         var result = await services.GetItemById(id);
+
         if (result.IsError)
-            return Problem(detail: result.FirstError.Description);
+            return ProblemBasedOnError(result.FirstError);
 
         return Ok(result.Value);
     }
+
     private static async Task<IResult> PostItems(
         ItemServices services,
         ItemImageHelper imageHelper,
@@ -110,4 +113,9 @@ public static class ItemEndpoint
             error => BadRequest(error));
     }
 
+    private static ProblemHttpResult ProblemBasedOnError(Error error) => error.Code switch
+    {
+        "Item.NotFound" => Problem(error.Description, statusCode: 404),
+        _ => Problem(statusCode: 500)
+    };
 }
