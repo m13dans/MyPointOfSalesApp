@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using MyPointOfSales.Application.Features.Items;
 using MyPointOfSales.Domain.Items;
 using MyPointOfSales.Infrastructure.DataContext;
-using static MyPointOfSales.Infrastructure.Features.Items.ImageHelper.ItemImageHelper;
 
 namespace MyPointOfSales.Infrastructure.Features.Items;
 
@@ -39,7 +38,7 @@ public class ItemRepository(AppDbContext dbContext) : IItemRepository
         var item = await dbContext.Items.SingleOrDefaultAsync(x => x.Id == id);
 
         if (item is null)
-            return Error.NotFound("Item.NotFound");
+            return Error.NotFound("Item.NotFound", $"Item dengan id {id} tidak dapat ditemukan.");
 
         var result = dbContext.Items.Remove(item);
 
@@ -51,7 +50,7 @@ public class ItemRepository(AppDbContext dbContext) : IItemRepository
     {
         var result = await dbContext.Items.SingleOrDefaultAsync(x => x.Id == id);
         if (result is null)
-            return Error.NotFound("Item.NotFound", "Item tidak ditemukan");
+            return Error.NotFound("Item.NotFound", $"Item dengan id {id} tidak dapat ditemukan.");
 
         return result;
     }
