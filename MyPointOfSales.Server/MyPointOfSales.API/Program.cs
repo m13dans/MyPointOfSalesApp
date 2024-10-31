@@ -96,6 +96,7 @@ builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<TransactionService>();
 builder.Services.AddScoped<ReportsService>();
 builder.Services.AddScoped<StockService>();
+builder.Services.AddScoped<IImageService, ImageService>();
 
 builder.Services.AddHttpContextAccessor();
 

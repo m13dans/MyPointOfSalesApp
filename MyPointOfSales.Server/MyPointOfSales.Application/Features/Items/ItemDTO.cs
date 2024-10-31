@@ -1,14 +1,20 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Http;
 
 namespace MyPointOfSales.Application.Features.Items;
 
 public record CreateItemRequest
 {
+    [Required]
     public required string NamaBarang { get; set; }
+    [Required]
     public required decimal Harga { get; set; }
+    [Required]
     public required int StokAwal { get; set; }
+    [Required]
 
     public required string Kategori { get; set; }
+    [Required]
     public required IFormFile Gambar { get; set; }
 }
 
@@ -35,10 +41,15 @@ public record ItemDTO
 
 public record UpdateItemRequest
 {
+    [Required]
     public int Id { get; set; }
+    [Required]
     public required string NamaBarang { get; set; }
+    [Required]
     public required decimal Harga { get; set; }
+    [Required]
     public required int StokAwal { get; set; }
+    [Required]
 
     public required string Kategori { get; set; }
     public IFormFile? Gambar { get; set; }

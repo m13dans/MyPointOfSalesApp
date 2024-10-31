@@ -7,5 +7,5 @@ public class Item
   public required decimal Harga { get; set; }
   public required int StokAwal { get; set; }
   public required string Kategori { get; set; }
-  public string? UrlGambar { get; set; }
+  public required string UrlGambar { get; set; }
 }

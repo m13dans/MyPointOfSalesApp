@@ -75,6 +75,7 @@ public static class ItemEndpoint
         ItemServices services,
         IImageService imageService,
         [FromForm] UpdateItemRequest request,
+        [FromRoute] int id,
         IValidator<UpdateItemRequest> validator)
     {
         var validationResult = await validator.ValidateAsync(request);

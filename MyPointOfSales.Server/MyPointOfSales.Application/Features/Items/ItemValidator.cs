@@ -26,7 +26,7 @@ public class CreateItemValidator : AbstractValidator<CreateItemRequest>
 
     public static bool ValidateImageExtension(IFormFile file)
     {
-        string[] allowedExt = ["jpg", "png", "jpeg"];
+        string[] allowedExt = [".jpg", ".png", ".jpeg", ".webp"];
         string fileExtension = Path.GetExtension(file.FileName).ToLower();
 
         return allowedExt.Contains(fileExtension);
@@ -39,12 +39,16 @@ public class UpdateItemValidator : AbstractValidator<UpdateItemRequest>
         RuleFor(x => x.NamaBarang).MinimumLength(3).MaximumLength(256);
         RuleFor(x => x.StokAwal).GreaterThanOrEqualTo(0);
         RuleFor(x => x.Kategori).MinimumLength(3).MaximumLength(256);
-        RuleFor(x => x.Gambar)
-            .Must(ValidateImageSize)
-            .WithMessage("Gambar harus kurang dari 2 Mb");
-        RuleFor(x => x.Gambar)
-            .Must(ValidateImageExtension)
-            .WithMessage("Harus berupa gambar .jpg / .png");
+        When(x => x.Gambar is not null, () =>
+        {
+            RuleFor(x => x.Gambar)
+                .Must(ValidateImageSize!)
+                .WithMessage("Gambar harus kurang dari 2 Mb");
+            RuleFor(x => x.Gambar)
+                .Must(ValidateImageExtension!)
+                .WithMessage("Harus berupa gambar .jpg / .png");
+        });
+
     }
 
     public static bool ValidateImageSize(IFormFile file)
@@ -55,7 +59,7 @@ public class UpdateItemValidator : AbstractValidator<UpdateItemRequest>
 
     public static bool ValidateImageExtension(IFormFile file)
     {
-        string[] allowedExt = ["jpg", "png", "jpeg"];
+        string[] allowedExt = [".jpg", ".png", ".jpeg", ".webp"];
         string fileExtension = Path.GetExtension(file.FileName).ToLower();
 
         return allowedExt.Contains(fileExtension);

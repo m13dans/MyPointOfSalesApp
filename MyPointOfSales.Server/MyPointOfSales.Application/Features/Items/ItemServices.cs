@@ -31,21 +31,19 @@ public class ItemServices(IItemRepository repo)
     {
         var item = await repo.GetItemById(request.Id);
 
-        if (!item.IsError)
+        if (item.IsError)
             return Error.NotFound("Item.NotFound", $"Item with id {request.Id} cannot be found");
 
-        Item itemEntity = request.ToEntity(request.Gambar?.FileName);
+        Item itemEntity = request.ToEntity(item.Value);
 
-        if (request.Gambar is null)
+        if (request.Gambar is not null)
         {
-            var updateItemWithoutImage = await repo.UpdateItem(itemEntity);
-            return updateItemWithoutImage;
+            var updateImageUrl = await imageService.UpdateImage(itemEntity.UrlGambar, request.Gambar);
+            itemEntity.UrlGambar = updateImageUrl;
         }
 
-        var urlImage = await imageService.SaveImage(request.Gambar);
-
-        var result2 = await repo.UpdateItem(itemEntity);
-        return result2;
+        var updateResult = await repo.UpdateItem(itemEntity);
+        return updateResult;
 
     }
 

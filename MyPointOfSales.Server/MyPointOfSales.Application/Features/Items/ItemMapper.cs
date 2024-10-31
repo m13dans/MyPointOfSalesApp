@@ -4,7 +4,7 @@ namespace MyPointOfSales.Application.Features.Items;
 
 public static class ItemMapper
 {
-    public static Item ToEntity(this CreateItemRequest request, string? imageUrl = null) =>
+    public static Item ToEntity(this CreateItemRequest request, string imageUrl) =>
     new Item
     {
         NamaBarang = request.NamaBarang,
@@ -14,13 +14,14 @@ public static class ItemMapper
         UrlGambar = imageUrl
     };
 
-    public static Item ToEntity(this UpdateItemRequest request, string? imageUrl = null) =>
-    new Item
+    public static Item ToEntity(this UpdateItemRequest request, Item item)
     {
-        NamaBarang = request.NamaBarang,
-        Harga = request.Harga,
-        StokAwal = request.StokAwal,
-        Kategori = request.Kategori,
-        UrlGambar = imageUrl
-    };
+        item.Id = request.Id;
+        item.NamaBarang = request.NamaBarang;
+        item.Harga = request.Harga;
+        item.StokAwal = request.StokAwal;
+        item.Kategori = request.Kategori;
+
+        return item;
+    }
 }
