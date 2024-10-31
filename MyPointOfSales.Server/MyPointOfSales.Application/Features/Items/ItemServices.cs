@@ -1,4 +1,5 @@
 using ErrorOr;
+using Microsoft.AspNetCore.Http;
 using MyPointOfSales.Domain.Items;
 
 namespace MyPointOfSales.Application.Features.Items;
@@ -15,17 +16,37 @@ public class ItemServices(IItemRepository repo)
         return item;
     }
 
-    public async Task<ErrorOr<Item>> CreateItem(
-        ItemDTO item)
+    public async Task<ErrorOr<Item>> CreateItem(IImageService imageService,
+        CreateItemRequest request)
     {
+        var imageUrl = await imageService.SaveImage(request.Gambar);
+
+        Item item = request.ToEntity(imageUrl);
+
         var result = await repo.CreateItem(item);
         return result;
     }
 
-    public async Task<ErrorOr<Item>> UpdateItem(int id, ItemDTO item)
+    public async Task<ErrorOr<Item>> UpdateItem(UpdateItemRequest request, IImageService imageService)
     {
-        var result = await repo.UpdateItem(id, item);
-        return result;
+        var item = await repo.GetItemById(request.Id);
+
+        if (!item.IsError)
+            return Error.NotFound("Item.NotFound", $"Item with id {request.Id} cannot be found");
+
+        Item itemEntity = request.ToEntity(request.Gambar?.FileName);
+
+        if (request.Gambar is null)
+        {
+            var updateItemWithoutImage = await repo.UpdateItem(itemEntity);
+            return updateItemWithoutImage;
+        }
+
+        var urlImage = await imageService.SaveImage(request.Gambar);
+
+        var result2 = await repo.UpdateItem(itemEntity);
+        return result2;
+
     }
 
     public async Task<ErrorOr<Item>> DeleteItem(int id)
@@ -33,6 +54,5 @@ public class ItemServices(IItemRepository repo)
         var result = await repo.DeleteItem(id);
         return result;
     }
-
 
 }

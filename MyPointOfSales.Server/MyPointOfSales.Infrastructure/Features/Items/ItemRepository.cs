@@ -15,35 +15,21 @@ public class ItemRepository(AppDbContext dbContext) : IItemRepository
         var result = await dbContext.Items.ToListAsync();
         return result;
     }
-    public async Task<ErrorOr<Item>> CreateItem(ItemDTO item)
+    public async Task<ErrorOr<Item>> CreateItem(Item item)
     {
-        Item newItem = ItemMapper.Map(item);
-        var result = await dbContext.Items.AddAsync(newItem);
+        await dbContext.Items.AddAsync(item);
 
         var rowAffected = await dbContext.SaveChangesAsync();
 
         if (rowAffected <= 0)
             return Error.Validation("Item.Validation", "Tidak dapat menambahkan item");
 
-        await SaveImage(item.AbsoluteUrlGambar, item.Gambar);
-        return result.Entity;
+        return item;
     }
 
-    public async Task<ErrorOr<Item>> UpdateItem(int id, ItemDTO itemUpdated)
+    public async Task<ErrorOr<Item>> UpdateItem(Item item)
     {
-        var item = await dbContext.Items.SingleOrDefaultAsync(x => x.Id == id);
-
-        if (item is null)
-            return Error.NotFound("Item.NotFound");
-
-        item.NamaBarang = itemUpdated.NamaBarang;
-        item.Harga = itemUpdated.Harga;
-        item.StokAwal = itemUpdated.StokAwal;
-        item.Kategori = itemUpdated.Kategori;
-        item.UrlGambar = itemUpdated.HostUrlGambar;
-
         var result = dbContext.Items.Update(item);
-        await SaveImage(itemUpdated.AbsoluteUrlGambar, itemUpdated.Gambar);
         await dbContext.SaveChangesAsync();
         return result.Entity;
     }

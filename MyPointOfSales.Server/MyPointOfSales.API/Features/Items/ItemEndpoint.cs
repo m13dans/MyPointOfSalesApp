@@ -1,5 +1,7 @@
+using Dapper;
 using ErrorOr;
 using FluentValidation;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using MyPointOfSales.Application.Features.Items;
@@ -54,49 +56,33 @@ public static class ItemEndpoint
 
     private static async Task<IResult> PostItems(
         ItemServices services,
-        ItemImageHelper imageHelper,
-        [FromForm] CreateItemCommand command,
-        IValidator<CreateItemCommand> validator)
+        IImageService imageService,
+        [FromForm] CreateItemRequest request,
+        IValidator<CreateItemRequest> validator)
     {
-        var validationResult = await validator.ValidateAsync(command);
+        var validationResult = await validator.ValidateAsync(request);
         if (!validationResult.IsValid)
             return ValidationProblem(validationResult.ToDictionary());
 
-        var (urlGambar, hostUrlGambar, imageInByte) = imageHelper.HandleImage(command.Gambar);
+        var result = await services.CreateItem(imageService, request);
 
-        ItemDTO itemDto = Helper.MapToItemDTO(command, urlGambar, hostUrlGambar, imageInByte);
-
-        var result = await services.CreateItem(itemDto);
-
-        return result.Match<IResult>(
+        return result.MatchFirst<IResult>(
             value => Created($"/api/items/{value.Id}", value: value),
-            error => Problem(statusCode: 400));
+            error => ProblemBasedOnError(error));
     }
 
     private static async Task<IResult> UpdateItem(
         ItemServices services,
-        ItemImageHelper imageHelper,
-        int id,
-        [FromForm] UpdateItemCommand command,
-        IValidator<UpdateItemCommand> validator)
+        IImageService imageService,
+        [FromForm] UpdateItemRequest request,
+        IValidator<UpdateItemRequest> validator)
     {
-        var validationResult = await validator.ValidateAsync(command);
+        var validationResult = await validator.ValidateAsync(request);
         if (!validationResult.IsValid)
             return ValidationProblem(validationResult.ToDictionary());
 
-        if (command.Gambar is null)
-        {
-            var itemWithoutImage = Helper.MapItemWithoutImage(command);
-            var resultItem = await services.UpdateItem(id, itemWithoutImage);
-            return resultItem.Match<IResult>(
-                Ok,
-                error => Problem(statusCode: StatusCodes.Status400BadRequest));
-        }
-        var (urlGambar, hostUrlGambar, imageInByte) = imageHelper.HandleImage(command.Gambar);
+        var result = await services.UpdateItem(request, imageService);
 
-        ItemDTO item = Helper.MapToItemDTO(command, urlGambar, hostUrlGambar, imageInByte);
-
-        var result = await services.UpdateItem(id, item);
         return result.Match<IResult>(
             Ok,
             error => Problem(statusCode: StatusCodes.Status400BadRequest));

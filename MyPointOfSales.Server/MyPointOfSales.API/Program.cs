@@ -99,8 +99,8 @@ builder.Services.AddScoped<StockService>();
 
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddScoped<IValidator<CreateItemCommand>, CreateItemValidator>();
-builder.Services.AddScoped<IValidator<UpdateItemCommand>, UpdateItemValidator>();
+builder.Services.AddScoped<IValidator<CreateItemRequest>, CreateItemValidator>();
+builder.Services.AddScoped<IValidator<UpdateItemRequest>, UpdateItemValidator>();
 builder.Services.AddScoped<IValidator<RegisterUserRequest>, RegisterUserValidator>();
 builder.Services.AddScoped<IValidator<LoginUserRequest>, LoginUserValidator>();
 builder.Services.AddScoped<IValidator<PostTransactionCommand>, PostTransactionCommandValidator>();
@@ -110,7 +110,7 @@ builder.Services.AddScoped<IUserRepoSitory, UserRepository>();
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 builder.Services.AddScoped<IStockRepository, StockRepository>();
 builder.Services.AddScoped<IReportRepository, ReportRepository>();
-builder.Services.AddScoped<TokenRepository>();
+builder.Services.AddScoped<ITokenRepoSitory, TokenRepository>();
 
 builder.Services.AddCors(cors =>
     cors.AddPolicy("BlazorCors", policy =>
