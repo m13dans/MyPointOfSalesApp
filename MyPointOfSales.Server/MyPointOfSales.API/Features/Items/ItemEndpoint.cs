@@ -1,12 +1,9 @@
-using Dapper;
 using ErrorOr;
 using FluentValidation;
-using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using MyPointOfSales.Application.Features.Items;
 using MyPointOfSales.Domain.Items;
-using MyPointOfSales.Infrastructure.Features.Items.ImageHelper;
 using static Microsoft.AspNetCore.Http.TypedResults;
 
 namespace MyPointOfSales.API.Features.Items;
@@ -67,8 +64,8 @@ public static class ItemEndpoint
         var result = await services.CreateItem(imageService, request);
 
         return result.MatchFirst<IResult>(
-            value => Created($"/api/items/{value.Id}", value: value),
-            error => ProblemBasedOnError(error));
+            onValue: value => Created($"/api/items/{value.Id}", value: value),
+            onFirstError: ProblemBasedOnError);
     }
 
     private static async Task<IResult> UpdateItem(
@@ -84,9 +81,9 @@ public static class ItemEndpoint
 
         var result = await services.UpdateItem(request, imageService);
 
-        return result.Match<IResult>(
-            Ok,
-            error => Problem(statusCode: StatusCodes.Status400BadRequest));
+        return result.MatchFirst<IResult>(
+            onValue: Ok,
+            onFirstError: ProblemBasedOnError);
     }
 
 
@@ -95,14 +92,16 @@ public static class ItemEndpoint
     {
         var result = await services.DeleteItem(id);
 
-        return result.Match<IResult>(
-            Ok,
-            error => BadRequest(error));
+        return result.MatchFirst<IResult>(
+            onValue: Ok,
+            onFirstError: ProblemBasedOnError);
     }
 
     private static ProblemHttpResult ProblemBasedOnError(Error error) => error.Code switch
     {
         "Item.NotFound" => Problem(error.Description, statusCode: 404),
+        "Item.Validation" => Problem(error.Description, statusCode: 400),
+        "Item.BadRequest" => Problem(error.Description, statusCode: 400),
         _ => Problem(statusCode: 500)
     };
 }
