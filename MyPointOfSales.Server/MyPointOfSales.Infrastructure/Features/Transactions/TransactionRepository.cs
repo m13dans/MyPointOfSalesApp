@@ -11,44 +11,44 @@ public class TransactionRepository(AppDbContext dbContext) : ITransactionReposit
 {
     public async Task<List<Transaction>> GetTransaction()
     {
-        var result = await dbContext.Transactions.ToListAsync();
+        var result = await dbContext.Transactions
+            .AsNoTracking()
+            .ToListAsync();
+
         return result;
     }
-    public async Task<List<Transaction>> GetTransaction(QueryOption query)
-    {
-        var result = dbContext.Transactions.OrderTransactionBy(query);
-        return await result.ToListAsync();
-    }
 
-    public async Task<ErrorOr<Transaction>> PostTransaction(PostTransactionCommand command)
+    public async Task<ErrorOr<Transaction>> PostTransaction(PostTransactionRequest request)
     {
-        var item = await dbContext.Items.SingleOrDefaultAsync(x => x.Id == command.ItemId);
+        var item = await dbContext.Items.SingleOrDefaultAsync(x => x.Id == request.ItemId);
         if (item is null)
-            return Error.NotFound(code: "404", description: "Item tidak ditemukan");
+            return Error.NotFound(
+                "Item.NotFound",
+                $"Item dengan id {request.ItemId} tidak dapat ditemukan.");
 
-        if (item.StokAwal < command.JumlahItem)
-            return Error.Validation(code: "400", description: "Jumlah item yang akan dijual lebih dari stok");
+        if (item.StokAwal < request.JumlahItem)
+            return Error.Validation(
+                code: "Transaction.Validation",
+                description: "Jumlah item yang akan dijual lebih dari stok");
 
+        item.StokAwal -= request.JumlahItem;
         Transaction transaction = new()
         {
-            ItemId = command.ItemId,
-            JumlahItem = command.JumlahItem,
+            ItemId = request.ItemId,
+            JumlahItemDiJual = request.JumlahItem,
+            SisaItem = item.StokAwal,
             Kategori = item.Kategori,
             Harga = item.Harga,
-            TotalHarga = item.Harga * command.JumlahItem,
+            TotalHarga = item.Harga * request.JumlahItem,
             TanggalTransaksi = DateOnly.FromDateTime(DateTime.Now)
         };
         await dbContext.Transactions.AddAsync(transaction);
 
-        var stokUpdated = item.StokAwal - command.JumlahItem;
-        item.StokAwal = stokUpdated;
         dbContext.Items.Update(item);
 
         await dbContext.SaveChangesAsync();
         return transaction;
     }
-
-
 }
 
 public static class ProductListDtoSort

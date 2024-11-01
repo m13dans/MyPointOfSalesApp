@@ -7,6 +7,5 @@ namespace MyPointOfSales.Application.Features.Transactions;
 public interface ITransactionRepository
 {
     public Task<List<Transaction>> GetTransaction();
-    public Task<List<Transaction>> GetTransaction(QueryOption query);
-    public Task<ErrorOr<Transaction>> PostTransaction(PostTransactionCommand command);
+    public Task<ErrorOr<Transaction>> PostTransaction(PostTransactionRequest command);
 }

@@ -104,7 +104,7 @@ builder.Services.AddScoped<IValidator<CreateItemRequest>, CreateItemValidator>()
 builder.Services.AddScoped<IValidator<UpdateItemRequest>, UpdateItemValidator>();
 builder.Services.AddScoped<IValidator<RegisterUserRequest>, RegisterUserValidator>();
 builder.Services.AddScoped<IValidator<LoginUserRequest>, LoginUserValidator>();
-builder.Services.AddScoped<IValidator<PostTransactionCommand>, PostTransactionCommandValidator>();
+builder.Services.AddScoped<IValidator<PostTransactionRequest>, PostTransactionCommandValidator>();
 
 builder.Services.AddScoped<IItemRepository, ItemRepository>();
 builder.Services.AddScoped<IUserRepoSitory, UserRepository>();

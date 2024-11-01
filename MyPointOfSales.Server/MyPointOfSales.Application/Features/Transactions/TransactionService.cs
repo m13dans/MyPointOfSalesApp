@@ -11,14 +11,9 @@ public class TransactionService(ITransactionRepository repository)
         var result = await repository.GetTransaction();
         return result;
     }
-    public async Task<List<Transaction>> GetTransaction(QueryOption query)
+    public async Task<ErrorOr<Transaction>> PostTransaction(PostTransactionRequest request)
     {
-        var result = await repository.GetTransaction(query);
-        return result;
-    }
-    public async Task<ErrorOr<Transaction>> PostTransaction(PostTransactionCommand command)
-    {
-        var result = await repository.PostTransaction(command);
+        var result = await repository.PostTransaction(request);
         return result;
     }
 }

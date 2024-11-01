@@ -3,7 +3,7 @@ using MyPointOfSales.Application.Features.Transactions;
 
 namespace MyPointOfSales.API.Features.Transactions;
 
-public class PostTransactionCommandValidator : AbstractValidator<PostTransactionCommand>
+public class PostTransactionCommandValidator : AbstractValidator<PostTransactionRequest>
 {
     public PostTransactionCommandValidator()
     {

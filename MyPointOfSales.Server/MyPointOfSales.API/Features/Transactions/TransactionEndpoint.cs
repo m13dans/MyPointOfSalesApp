@@ -1,8 +1,10 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Http.HttpResults;
+using MyPointOfSales.API.Features.Shared;
 using MyPointOfSales.Application.Features.Transactions;
 using MyPointOfSales.Domain.Transactions;
 using static Microsoft.AspNetCore.Http.TypedResults;
+using static MyPointOfSales.API.Features.Shared.HttpResultHelper;
 
 namespace MyPointOfSales.API.Features.Transactions;
 
@@ -12,8 +14,8 @@ public static class TransactionEndpoint
     {
         var endpoints = app.MapGroup("api/pos/transactions")
             .WithOpenApi()
-            .WithTags("Transaction")
-            .RequireAuthorization();
+            .WithTags("Transaction");
+        // .RequireAuthorization();
 
         endpoints.MapGet("", GetTransaction)
             .Produces<List<Transaction>>();
@@ -31,19 +33,17 @@ public static class TransactionEndpoint
     }
     private static async Task<IResult> PostTransaction(
         TransactionService services,
-        PostTransactionCommand command,
-        IValidator<PostTransactionCommand> validator)
+        PostTransactionRequest request,
+        IValidator<PostTransactionRequest> validator)
     {
-        var validationResult = await validator.ValidateAsync(command);
+        var validationResult = await validator.ValidateAsync(request);
         if (!validationResult.IsValid)
             return ValidationProblem(validationResult.ToDictionary());
 
-        var result = await services.PostTransaction(command);
+        var result = await services.PostTransaction(request);
 
-        return result.Match<IResult>(
+        return result.MatchFirst<IResult>(
             Ok,
-            error => Problem(
-                statusCode: int.Parse(error.First().Code),
-                detail: error.First().Description));
+            ProblemBasedOnError);
     }
 }

@@ -1,10 +1,10 @@
-using ErrorOr;
 using FluentValidation;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using MyPointOfSales.Application.Features.Items;
 using MyPointOfSales.Domain.Items;
 using static Microsoft.AspNetCore.Http.TypedResults;
+using static MyPointOfSales.API.Features.Shared.HttpResultHelper;
 
 namespace MyPointOfSales.API.Features.Items;
 
@@ -97,11 +97,5 @@ public static class ItemEndpoint
             onFirstError: ProblemBasedOnError);
     }
 
-    private static ProblemHttpResult ProblemBasedOnError(Error error) => error.Code switch
-    {
-        "Item.NotFound" => Problem(error.Description, statusCode: 404),
-        "Item.Validation" => Problem(error.Description, statusCode: 400),
-        "Item.BadRequest" => Problem(error.Description, statusCode: 400),
-        _ => Problem(statusCode: 500)
-    };
+
 }
